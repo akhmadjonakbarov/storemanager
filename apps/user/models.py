@@ -1,5 +1,5 @@
-from sqlalchemy.orm import relationship
-
+import re
+from sqlalchemy.orm import relationship, validates
 from sqlalchemy import Column, String, Boolean
 from sqlalchemy import Enum as SQLAlchemyEnum
 import enum
@@ -32,5 +32,8 @@ class UserModel(Base):
     document_item_balances = relationship('DocumentItemBalanceModel', back_populates='user')
     customers = relationship('CustomerModel', back_populates='user')
 
-    def __str__(self):
-        return str(self.email)
+    @validates('phone_number', 'phone_number2')
+    def validate_phone_number(self, key, value):
+        if value and not re.match(r'^\+?\d{9,15}$', value):
+            raise ValueError('Invalid phone number format. Expected format: 901234567.')
+        return value
