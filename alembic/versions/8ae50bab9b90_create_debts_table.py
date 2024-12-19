@@ -31,6 +31,11 @@ def upgrade() -> None:
             'updated_at', sa.DateTime(), nullable=False,
             default=lambda: Base.get_tashkent_time(), onupdate=lambda: Base.get_tashkent_time()
         ),
+        sa.Column(
+            'is_deleted', sa.Boolean(),
+            default=False,
+            index=True, nullable=True,
+        ),
         sa.Column('phone_number', sa.String(length=15), nullable=False),
         sa.Column('phone_number2', sa.String(length=15), nullable=True, default=None),
         sa.Column('address', sa.String(length=255), nullable=False),
@@ -40,6 +45,5 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     )
 
-
-def downgrade() -> None:
-    pass
+    def downgrade() -> None:
+        pass
