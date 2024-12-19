@@ -30,6 +30,7 @@ class UserModel(Base):
     documents = relationship('DocumentModel', back_populates='user')
     document_items = relationship('DocumentItemModel', back_populates='user')
     document_item_balances = relationship('DocumentItemBalanceModel', back_populates='user')
+    customers = relationship('CustomerModel', back_populates='user')
 
     def __str__(self):
         return str(self.email)
