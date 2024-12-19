@@ -8,15 +8,16 @@ from apps.product_manager.routes import (
 from apps.user import routes as user_routes
 from apps.debt import routes as debt_routes
 from apps.customer import routes as customer_routes
-from config.database_config import engine
+from core.database_config import engine
 from apps.base.models import Base
+from core.settings import settings
 
 app = FastAPI(
     title="Store Manager",
 )
 Base.metadata.create_all(bind=engine)
 
-BASE_API_URL = "/api/v1"
+BASE_API_URL = settings.API_V1_STR
 app.include_router(user_routes.router, prefix=BASE_API_URL)
 app.include_router(store_routes.router, prefix=BASE_API_URL)
 app.include_router(item_routes.router, prefix=BASE_API_URL)

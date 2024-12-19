@@ -3,10 +3,10 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from pydantic import BaseModel, Field
 from starlette import status
-from .utils.password_manager import password_context
+
 from apps.user.models import UserModel
 from di.db import db_dependency
-from .utils.token_manager import create_token
+from core.security import verify_password, get_password_hash, create_access_token
 
 router = APIRouter(
     prefix="/auth",
@@ -33,7 +33,7 @@ class LoginRequest(BaseModel):
 
 @router.post("/login")
 async def login(db: db_dependency, login_req: LoginRequest):
-    user = db.query(UserModel).filter(login_req.email == UserModel.email and password_context.verify(
+    user = db.query(UserModel).filter(login_req.email == UserModel.email and verify_password(
         login_req.password) == UserModel.password).first()
 
     if not user:
@@ -42,7 +42,7 @@ async def login(db: db_dependency, login_req: LoginRequest):
             detail="Incorrect username or password"
         )
     return {
-        'access_token': create_token(
+        'access_token': create_access_token(
             email=user.email,
             user_id=user.id,
         )
@@ -56,12 +56,12 @@ async def register(db: db_dependency, created_user_body: CreateUserRequest):
             email=created_user_body.email,
             first_name=created_user_body.first_name,
             last_name=created_user_body.last_name,
-            password=password_context.hash(created_user_body.password)
+            password=get_password_hash(created_user_body.password)
         )
         db.add(created_user)
         db.commit()
         return {
-            "access_token": create_token(
+            "access_token": create_access_token(
                 email=created_user.email,
                 user_id=created_user.id
             )
@@ -75,6 +75,6 @@ async def register(db: db_dependency, created_user_body: CreateUserRequest):
 @router.post("/token")
 async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: db_dependency):
     user: UserModel = db.query(UserModel).filter(UserModel.email == form_data.username).first()
-    if not user or not password_context.verify(form_data.password, user.password):
+    if not user or not verify_password(form_data.password, user.password):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
-    return {"access_token": create_token(user.email, user.id)}
+    return {"access_token": create_access_token(user.email, user.id)}

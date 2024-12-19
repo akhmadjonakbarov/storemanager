@@ -4,10 +4,10 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
 import time
-
+from core.security import settings
 from apps.user.models import UserModel
-from apps.user.utils.token_manager import SECRET_KEY, ALGORITHM
-from config.database_config import db_init
+
+from core.database_config import db_init
 
 
 class LoggingMiddleware(BaseHTTPMiddleware):
@@ -35,7 +35,7 @@ class UserHandlerMiddleware(BaseHTTPMiddleware):
             )
         try:
             token = token.replace('Bearer ', '')
-            payload = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
             user_id = payload.get('id')
             if not user_id:
                 raise HTTPException(

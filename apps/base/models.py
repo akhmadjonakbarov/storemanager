@@ -5,7 +5,7 @@ from sqlalchemy import Integer, Column, DateTime, Boolean
 
 from sqlalchemy.orm import as_declarative
 
-from config import settings
+from core.settings import settings
 
 
 @as_declarative()
