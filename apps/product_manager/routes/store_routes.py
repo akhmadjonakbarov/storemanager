@@ -1,11 +1,13 @@
 from fastapi import APIRouter, HTTPException
 from starlette import status
 
-from apps.product_manager.models import DocumentItemBalanceModel
+from apps.product_manager.models import DocumentItemBalanceModel, DocumentModel
 from apps.product_manager.schemes import DocumentItemBalanceUpdatedScheme
 from di.db import db_dependency
 from di.user import user_dependency
 from utils.response_type import *
+from .serializers.document_item_balance_serializers import DocumentItemBalanceModelSerializer
+from .serializers.store_serializers import StoreDocumentItemBalanceModelSerializer
 
 router = APIRouter(
     prefix="/store",
@@ -14,9 +16,19 @@ router = APIRouter(
 
 
 @router.get("/all", status_code=status.HTTP_200_OK)
-async def get_products_in_store(db: db_dependency, user: user_dependency):
+async def get_products_in_store(db: db_dependency, user: user_dependency, document_id=None):
+    serializer = StoreDocumentItemBalanceModelSerializer(many=True)
     item_balances = db.query(DocumentItemBalanceModel).all()
-    return response_list(lst=item_balances)
+    if document_id is not None:
+        document: DocumentModel = (
+            db.query(DocumentModel)
+                .filter_by(id=document_id, is_deleted=False)  # Replace 'is_deleted' with your field name
+                .first()
+        )
+        if not document:
+            item_balances = db.query(DocumentItemBalanceModel).filter_by(document_id=document.id).all()
+    serialized_products = serializer.dump(item_balances)
+    return response_list(lst=serialized_products)
 
 
 @router.patch("/update-item-balance/{item_balance_id}", status_code=status.HTTP_200_OK)

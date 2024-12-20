@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from sqlalchemy.orm import relationship
 from apps.base.models import Base
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, DateTime, Numeric
@@ -21,7 +22,7 @@ class UnitModel(Base):
     value = Column(String(25), unique=True, nullable=False)
 
     # relationships
-    items = relationship('ItemModel', back_populates='unit')
+    items = relationship('ItemModel', secondary='item_units', back_populates='units')
 
 
 class ItemModel(Base):
@@ -33,8 +34,8 @@ class ItemModel(Base):
     category = relationship('CategoryModel', back_populates='items')
 
     # unit relationships
-    unit_id = Column(Integer, ForeignKey('units.id'), nullable=False)
-    unit = relationship('UnitModel', back_populates='items')
+
+    units = relationship('UnitModel', secondary='item_units', back_populates='items')
 
     # user relationships
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
@@ -43,6 +44,13 @@ class ItemModel(Base):
     # document item relationships
     document_items = relationship('DocumentItemModel', back_populates='item')
     document_item_balances = relationship('DocumentItemBalanceModel', back_populates='item')
+
+
+class ItemUnitModel(Base):
+    __tablename__ = 'item_units'
+    id = Column(Integer, primary_key=True)
+    item_id = Column(Integer, ForeignKey('items.id'), nullable=False)
+    unit_id = Column(Integer, ForeignKey('units.id'), nullable=False)
 
 
 class DocumentModel(Base):
@@ -58,6 +66,10 @@ class DocumentModel(Base):
     # back_populates
     document_items = relationship('DocumentItemModel', back_populates='document')
     document_item_balances = relationship('DocumentItemBalanceModel', back_populates='document')
+
+    # relationships with customer model
+    customer_id = Column(Integer, ForeignKey('customers.id'), nullable=True)
+    customer = relationship('CustomerModel', back_populates='documents')
 
 
 class DocumentItemModel(Base):

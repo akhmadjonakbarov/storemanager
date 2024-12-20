@@ -35,7 +35,32 @@ class DocumentItemModelScheme(BaseModel):
     item_id: int = Field(..., description="Item details")
 
 
-class DocumentModelScheme(BaseModel):
+class BuyDocumentModelScheme(BaseModel):
+    product_doc_items: List[DocumentItemModelScheme] = Field(
+        ..., description="List of product document items"
+    )
+
+
+class DebtDataScheme(BaseModel):
+    full_name: Optional[None] = Field(
+        default=None,
+        description="Customer's full name")
+    phone_number: Optional[None] = Field(
+        default=None,
+        description="Customer's phone number")
+    phone_number2: Optional[None] = Field(
+
+        default=None, description="Customer's phone number"
+
+    )
+    address: Optional[None] = Field(description="Customer's address", default=None)
+    amount: Optional[None] = Field(description="Debt amount", default=None)
+
+
+class SellDocumentModelScheme(BaseModel):
+    customer_id: Optional[int] = Field(description="Client's id")
+    debt_data: DebtDataScheme = Field()
+    is_debt: bool = Field()
     product_doc_items: List[DocumentItemModelScheme] = Field(
         ..., description="List of product document items"
     )

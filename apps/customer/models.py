@@ -19,6 +19,8 @@ class CustomerModel(Base):
 
     # Relationship to CustomerDebtModel
     customer_debts = relationship('CustomerDebtModel', back_populates='customer')
+    # Relationship to Documents
+    documents = relationship('DocumentModel', back_populates='customer')
 
     @validates('phone_number', 'phone_number2')
     def validate_phone_number(self, key, value):
