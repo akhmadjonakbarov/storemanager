@@ -1,10 +1,14 @@
 from .user.models import UserModel
-from .currency.models import CurrencyModel
 from .product_manager.models import (
+    CompanyModel, CategoryModel, UnitModel, ItemModel,
+    ItemUnitModel,
     DocumentModel,
     DocumentItemModel,
     DocumentItemBalanceModel,
 )
+from .currency.models import CurrencyModel, CurrencyTypeModel
+from .debt.models import DebtModel
+from .customer.models import CustomerModel, CustomerDebtModel
 
 # Ensure all models are imported
 __all__ = [
@@ -13,6 +17,11 @@ __all__ = [
     "DocumentModel",
     "DocumentItemModel",
     "DocumentItemBalanceModel",
+    "CompanyModel",
+    "CategoryModel",
+    "UnitModel",
+    "ItemModel",
+    "ItemUnitModel",
+    "CustomerModel",
+    "CustomerDebtModel"
 ]
-
-

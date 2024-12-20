@@ -1,23 +1,19 @@
-from typing import Any, Callable, Set
+from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
+import os
 
-from pydantic import (
-    AliasChoices,
-    AmqpDsn,
-    BaseModel,
-    Field,
-    ImportString,
-    PostgresDsn,
-    RedisDsn,
-)
-from pydantic_settings import BaseSettings, SettingsConfigDict
+load_dotenv()
 
 
 class Settings(BaseSettings):
-    API_V1_STR = "/api/v1"
-    TIME_ZONE = 'Asia/Tashkent'
+    APP_NAME: str = "Store Manager"
+    API_V1_STR: str = "/api/v1"
+    TIME_ZONE: str = 'Asia/Tashkent'
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 120
     SECRET_KEY: str = "dd9a735175a83222d92c987aec57f4bde11f0e770b5d9ebd5803f734b290edba"
-    ALGORITHM = "HS256"
+    ALGORITHM: str = "HS256"
+    ADMIN_EMAIL: str = "akhmadjonakbarov@gmail.com"
+    DATABASE_URL: str = os.getenv('DATABASE_URL')
 
 
 settings = Settings()

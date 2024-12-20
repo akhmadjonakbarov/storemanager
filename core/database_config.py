@@ -1,16 +1,13 @@
 from databases import Database
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
-
-sqlite_file_name = "database.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
-DATABASE_URL = "postgresql://postgres:toor@localhost:5432/StoreManagerDatabase"
+from core.settings import settings
 
 # Create a Database instance
-database = Database(DATABASE_URL)
+database = Database(settings.DATABASE_URL)
 
 engine = create_engine(
-    DATABASE_URL
+    settings.DATABASE_URL
 )
 
 SessionLocal = sessionmaker(
